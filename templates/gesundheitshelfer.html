@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KI Gesundheitshelfer | AlltagsBuddy</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; background-color: #f9f9f9; color: #333; }
+    header, footer { background-color: #ffffff; padding: 20px 40px; border-bottom: 1px solid #eee; text-align: center; }
+    .logo { display: flex; align-items: center; gap: 10px; justify-content: center; }
+    .logo img { height: 60px; }
+    .logo span { font-size: 1.8rem; font-weight: 700; color: #1BC7C2; }
+    main { max-width: 900px; margin: 40px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1, h2 { text-align: center; color: #FF6B00; }
+    label { display: block; margin-top: 15px; font-weight: 600; }
+    textarea, input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; box-sizing: border-box; }
+    button { background-color: #FF6B00; color: white; font-weight: bold; border: none; cursor: pointer; margin-top: 20px; }
+    .output { margin-top: 30px; background-color: #f4f4f4; padding: 20px; border-radius: 8px; white-space: pre-wrap; }
+    #status { margin-top: 15px; font-weight: bold; text-align: center; }
+    .hinweis { font-size: 0.9rem; text-align: center; color: #555; margin-top: 20px; }
+    .range-container { position: relative; margin-top: 10px; padding-top: 30px; }
+    .range-labels { display: flex; justify-content: space-between; font-size: 0.9rem; color: #666; padding: 0 5px; }
+    #sliderWrapper { position: relative; width: 100%; }
+    #stressTooltip {
+      position: absolute;
+      top: -30px;
+      left: 0;
+      transform: translateX(-50%);
+      background-color: #FF6B00;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+    input[type="range"] { width: 100%; appearance: none; height: 8px; border-radius: 5px; background: linear-gradient(to right, #1BC7C2 0%, #FF6B00 100%); outline: none; margin: 0; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 20px; height: 20px; background: #fff; border: 2px solid #FF6B00; border-radius: 50%; cursor: pointer; margin-top: -6px; }
+    .checkbox-group { display: flex; gap: 10px; margin-top: 10px; }
+    .checkbox-group label { font-weight: normal; margin-top: 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="logo.png" alt="AlltagsBuddy Logo" />
+      <span>AlltagsBuddy</span>
+    </div>
+    <h1>KI Gesundheitshelfer</h1>
+  </header>
+  <main>
+    <h2>Symptomanalyse & Empfehlungen</h2>
+    <p style="text-align:center">Gib deine Symptome und Eckdaten an – unsere KI gibt dir eine unverbindliche Ersteinschätzung mit möglichen Ursachen und rezeptfreien Behandlungsmöglichkeiten.</p>
+
+    <form id="healthForm">
+      <label for="geschlecht">Geschlecht *</label>
+      <select id="geschlecht" required>
+        <option value="">Bitte auswählen</option>
+        <option value="weiblich">Weiblich</option>
+        <option value="männlich">Männlich</option>
+        <option value="divers">Divers</option>
+      </select>
+
+      <label for="alter">Alter *</label>
+      <input type="number" id="alter" min="0" max="120" required />
+
+      <label for="gewicht">Gewicht (kg) *</label>
+      <input type="number" id="gewicht" min="0" max="200" required />
+
+      <label for="groesse">Größe (cm) *</label>
+      <input type="number" id="groesse" min="50" max="250" required />
+
+      <label for="raucher">Rauchst du? *</label>
+      <select id="raucher" required>
+        <option value="">Bitte auswählen</option>
+        <option value="ja">Ja</option>
+        <option value="nein">Nein</option>
+        <option value="gelegentlich">Gelegentlich</option>
+      </select>
+
+      <label for="schwangerschaft">Schwanger oder stillend?</label>
+      <select id="schwangerschaft">
+        <option value="">Bitte auswählen</option>
+        <option value="nicht zutreffend">Nicht zutreffend</option>
+        <option value="schwanger">Schwanger</option>
+        <option value="stillend">Stillend</option>
+      </select>
+
+      <label for="medikamente">Aktuelle Medikamenteneinnahme</label>
+      <textarea id="medikamente" rows="2" placeholder="z. B. Blutdrucksenker, Ibuprofen…"></textarea>
+
+      <label for="nahrung">Nahrungsergänzungsmittel</label>
+      <textarea id="nahrung" rows="2" placeholder="z. B. Vitamin D, Magnesium…"></textarea>
+
+      <label for="vorerkrankungen">Vorerkrankungen</label>
+      <textarea id="vorerkrankungen" rows="2" placeholder="z. B. Diabetes, Asthma…"></textarea>
+
+      <label for="allergien">Allergien / Unverträglichkeiten</label>
+      <textarea id="allergien" rows="2" placeholder="z. B. Penicillin, Laktose…"></textarea>
+
+      <label for="dauer">Seit wann bestehen die Beschwerden? *</label>
+      <input type="text" id="dauer" placeholder="z. B. seit 3 Tagen" required />
+
+      <label for="stress">Stresslevel (1 = kein Stress, 10 = sehr hoch)</label>
+      <div class="range-container">
+        <div id="sliderWrapper">
+          <div id="stressTooltip">5</div>
+          <input type="range" id="stress" min="1" max="10" step="1" value="1" />
+        </div>
+       
+      </div>
+
+      <label for="schlaf">Schlafqualität</label>
+      <select id="schlaf">
+        <option value="">Bitte auswählen</option>
+        <option value="gut">Gut</option>
+        <option value="mittel">Mittel</option>
+        <option value="schlecht">Schlecht</option>
+      </select>
+
+      <label for="reisen">Kürzliche Reisen oder Auslandsaufenthalte</label>
+      <textarea id="reisen" rows="2" placeholder="z. B. vor 2 Wochen in Italien…"></textarea>
+
+      <label for="symptome">Beschreibe deine Symptome *</label>
+      <textarea id="symptome" rows="8" placeholder="Beispiel: Seit 3 Tagen Halsschmerzen, leichtes Fieber, trockener Husten." required></textarea>
+
+      <label>Welche Empfehlungen wünschst du?</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="medikamente_check" value="rezeptfrei" checked /> Rezeptfreie Medikamente</label>
+        <label><input type="checkbox" id="alternativen_check" value="alternativ" /> Natürliche Alternativen</label>
+      </div>
+
+      <button id="generateBtn" type="submit">Diagnose & Empfehlungen erhalten</button>
+    </form>
+
+    <div class="hinweis">
+      ⚠️ Diese Einschätzung ersetzt keinen Arztbesuch. Bitte konsultiere bei Unsicherheit, anhaltenden oder schweren Beschwerden medizinisches Fachpersonal.
+    </div>
+
+    <div id="status"></div>
+    <div id="output" class="output"></div>
+  </main>
+  <footer>
+    &copy; 2025 AlltagsBuddy – Dein smarter KI-Buddy
+  </footer>
+
+  <script>
+    const form = document.getElementById('healthForm');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    const generateBtn = document.getElementById('generateBtn');
+    const stressSlider = document.getElementById('stress');
+    const stressTooltip = document.getElementById('stressTooltip');
+
+    function updateTooltipPosition() {
+      const slider = stressSlider;
+      const tooltip = stressTooltip;
+      const min = +slider.min;
+      const max = +slider.max;
+      const val = +slider.value;
+
+      const percent = (val - min) / (max - min);
+      tooltip.innerText = val;
+      tooltip.style.left = `calc(${percent * 100}% - 10px)`;
+    }
+
+    stressSlider.addEventListener('input', updateTooltipPosition);
+    updateTooltipPosition();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const daten = {};
+      [...form.elements].forEach(el => {
+        if (el.id && el.type !== 'submit') {
+          if (el.type === 'checkbox') {
+            if (!daten[el.id]) daten[el.id] = [];
+            if (el.checked) daten[el.id].push(el.value);
+          } else {
+            daten[el.id] = el.value;
+          }
+        }
+      });
+
+      const pflichtfelder = ['geschlecht', 'alter', 'gewicht', 'groesse', 'raucher', 'dauer', 'symptome'];
+      for (const feld of pflichtfelder) {
+        if (!daten[feld] || daten[feld].trim() === '') {
+          status.innerText = "⚠️ Bitte fülle alle Pflichtfelder aus.";
+          status.style.color = "red";
+          return;
+        }
+      }
+
+      status.innerText = '⏳ Diagnose wird erstellt...';
+      status.style.color = '#333';
+      generateBtn.disabled = true;
+
+      const res = await fetch('/api/health', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(daten)
+      });
+
+      const data = await res.json();
+      if (data.error) {
+        status.innerText = '❌ Fehler: ' + data.error;
+        status.style.color = 'red';
+        generateBtn.disabled = false;
+        return;
+      }
+
+      output.innerHTML = `<h3>Diagnose-Vorschlag:</h3><p>${data.diagnose.replace(/\n/g, '<br>')}</p><h3>Behandlungsempfehlung:</h3><p>${data.behandlung.replace(/\n/g, '<br>')}</p>`;
+      status.innerText = '✅ Analyse abgeschlossen';
+      status.style.color = 'green';
+      generateBtn.disabled = false;
+    });
+  </script>
+</body>
+</html>
