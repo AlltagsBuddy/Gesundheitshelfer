@@ -6,7 +6,6 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Setze deinen OpenAI API-Schlüssel (z. B. per Umgebungsvariable)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/api/health", methods=["POST"])
@@ -71,5 +70,7 @@ Gib basierend darauf eine mögliche Ursache (Verdachtsdiagnose) aus – allgemei
 Danach gib passende Empfehlungen, z. B. Hausmittel, rezeptfreie Präparate oder alternative Möglichkeiten. Weise auch darauf hin, wann ärztliche Hilfe nötig wäre.
 """
 
+# Lokaler Entwicklungsstart (z. B. mit `python app.py`)
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
