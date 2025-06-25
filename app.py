@@ -3,6 +3,12 @@ from flask_cors import CORS
 import openai
 import os
 
+from flask import render_template
+
+@app.route("/")
+def index():
+    return render_template("gesundheitshelfer.html")
+
 app = Flask(__name__)
 CORS(app)
 
