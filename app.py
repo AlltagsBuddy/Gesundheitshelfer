@@ -1,18 +1,15 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import openai
 import os
-from flask import render_template
-
-from flask import Flask
 
 app = Flask(__name__)
-
-
+CORS(app)
 
 @app.route("/")
 def index():
     return render_template("gesundheitshelfer.html")
+
 
 
 
