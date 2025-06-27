@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import openai
 import os
+from flask import render_template
 
 from flask import Flask
 
@@ -12,6 +13,8 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return render_template("gesundheitshelfer.html")
+
+
 
 app = Flask(__name__)
 CORS(app)
